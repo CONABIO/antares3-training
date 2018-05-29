@@ -34,13 +34,6 @@ gdal_rasterize -co COMPRESS=LZW -ot Byte -a madmex -tr 30.0 30.0 -te  907836.035
 gdal_rasterize -co COMPRESS=LZW -ot Byte -a madmex -tr 30.0 30.0 -te  907836.035 319429.201 4083036.035 2349619.201 -l usv250s6_union /LUSTRE/MADMEX/tasks/2018_tasks/series_inegi_madmex/usv250s6_union.shp /LUSTRE/MADMEX/tasks/2018_tasks/series_inegi_madmex_raster/usv250s6_union.tif
 ```
 
-Finally we want to summarize the information of all series (2-6) in a single raster. To this end, we use rasterio and numpy to perform a raster algebra operation on the rasters, we will filter all the pixels whose class didn't change. Given that the rasters are quite big to fit in memory at the same time, we process them by block and write the output in the same way. In the folder `/LUSTRE/MADMEX/tasks/2018_tasks/series_inegi_madmex_raster` we execute:
-
-```
-python block.py
-```
-
-In the end we will have a raster file named *final.tif*
 
 ## BITS Reference Map
 
@@ -56,6 +49,23 @@ To translate into the same window as the INEGI series:
 ```
 gdal_translate -ot Byte -co COMPRESS=LZW -projwin 907836.035 2349619.201 4083036.035 319429.201  mexico.vrt mexico.tif
 ```
+
+## INEGI + BITS
+
+Finally we want to summarize the information of all series (2-6) in a single raster. To this end, we use rasterio and numpy to perform a raster algebra operation on the rasters, we will filter all the pixels whose class didn't change. Given that the rasters are quite big to fit in memory at the same time, we process them by block and write the output in the same way. In the folder `/LUSTRE/MADMEX/tasks/2018_tasks/series_inegi_madmex_raster` we execute:
+
+```
+python block.py
+```
+
+In the end we will have a raster file named *final.tif*. The current file can be found at:
+
+```
+/LUSTRE/MADMEX/tasks/2018_tasks/convergence_of_evidence
+```
+
+
+
 
 ## Mangroves
 

@@ -8,8 +8,11 @@ src_ds = gdal.Open(filename, gdal.GA_ReadOnly)
 srcband = src_ds.GetRasterBand(1)
 maskband = srcband.GetMaskBand()
 drv = gdal.GetDriverByName(str('GTiff'))
-dst_ds = drv.Create(output, src_ds.RasterXSize, src_ds.RasterYSize, 1,
-                     srcband.DataType )
+dst_ds = drv.Create(output, 
+                    src_ds.RasterXSize, 
+                    src_ds.RasterYSize, 1,
+                    srcband.DataType,
+                    options=['COMPRESS=LZW'])
 wkt = src_ds.GetProjection()
 if wkt != '':
     dst_ds.SetProjection( wkt )

@@ -2,8 +2,8 @@ import gdal
 filename = 'final.tif'
 output = 'final_clumped.tif'
 gdal.AllRegister()
-threshold = 1
-connectedness = 8
+threshold = 200
+connectedness = 4
 src_ds = gdal.Open(filename, gdal.GA_ReadOnly)
 srcband = src_ds.GetRasterBand(1)
 maskband = srcband.GetMaskBand()

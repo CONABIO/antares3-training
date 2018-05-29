@@ -50,23 +50,6 @@ To translate into the same window as the INEGI series:
 gdal_translate -ot Byte -co COMPRESS=LZW -projwin 907836.035 2349619.201 4083036.035 319429.201  mexico.vrt mexico.tif
 ```
 
-## INEGI + BITS
-
-Finally we want to summarize the information of all series (2-6) in a single raster. To this end, we use rasterio and numpy to perform a raster algebra operation on the rasters, we will filter all the pixels whose class didn't change. Given that the rasters are quite big to fit in memory at the same time, we process them by block and write the output in the same way. In the folder `/LUSTRE/MADMEX/tasks/2018_tasks/series_inegi_madmex_raster` we execute:
-
-```
-python block.py
-```
-
-In the end we will have a raster file named *final.tif*. The current file can be found at:
-
-```
-/LUSTRE/MADMEX/tasks/2018_tasks/convergence_of_evidence
-```
-
-
-
-
 ## Mangroves
 
 The file *mx_man15gw.shp* was downloaded from CONABIO portal. A process similar to the one with the INEGI series was performed on the file with the python script named *transform_mangroves.py*. The resulting shape with the madmex column can be found at:
@@ -78,7 +61,7 @@ The file *mx_man15gw.shp* was downloaded from CONABIO portal. A process similar 
 However, the resulting file is not projected so we need to project it into Lambert Comformal Conic (This Proj4 string was taken from [http://spatialreference.org/ref/sr-org/6700/](http://spatialreference.org/ref/sr-org/6700/)):
 
 ```
-ogr2ogr -f "ESRI Shapefile" mangroves_inegi.shp mangroves.shp -t_srs "+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs"
+ogr2ogr -f "ESRI Shapefile" mangroves_inegi.shp mangroves.shp -t_srs "+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
 ```
 
 Then we can use this command to rasterize it:
@@ -99,7 +82,7 @@ We already downloaded and preprocess the tiles for the global surface water prod
 We need to apply the same process as with the mangroves file:
 
 ```
-ogr2ogr -f "ESRI Shapefile" global_surface_water_inegi.shp global_surface_water.shp -t_srs "+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs"
+ogr2ogr -f "ESRI Shapefile" global_surface_water_inegi.shp global_surface_water.shp -t_srs "+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
 ```
 
 
@@ -108,3 +91,33 @@ Later with this command we transformed that shape file into a raster:
 ```
 gdal_rasterize -ot Byte -co COMPRESS=LZW -a madmex -tr 30.0 30.0 -te 907836.035 319429.201 4083036.035 2349619.201 global_surface_water_inegi.shp final_global_surface_water.tif
 ```
+
+## INEGI + BITS + Mangroves + Global Surface Water
+
+Finally we want to summarize the information of all series (2-6) in a single raster. To this end, we use rasterio and numpy to perform a raster algebra operation on the rasters, we will filter all the pixels whose class didn't change. Given that the rasters are quite big to fit in memory at the same time, we process them by block and write the output in the same way. Rasters with mangrove and water information will be overwritten on the final raster. In a folder that includes all the products that we just generated we execute:
+
+```
+python block.py
+```
+
+We have a raster file named *final.tif*. The current file can be found at:
+
+```
+/LUSTRE/MADMEX/tasks/2018_tasks/convergence_of_evidence
+```
+
+## Clumpling
+
+To get rid of some pixels product of noise innherent to the BITS process we experimented with the SieveFilter function that comes with gdal:
+
+```
+python clump.py
+```
+
+The clumped file is in:
+
+```
+/LUSTRE/MADMEX/tasks/2018_tasks/convergence_of_evidence
+```
+
+

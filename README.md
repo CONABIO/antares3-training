@@ -54,5 +54,38 @@ find $(pwd) -name *.shp -exec sh -c 'gdal_rasterize -ot Byte -co "COMPRESS=LZW" 
 To translate into the same window as the INEGI series:
 
 ```
-gdal_translate -ot Byte -co "COMPRESS=LZW" -projwin 907836.035 2349619.201 4083036.035 319429.201  mexico.vrt mexico.tif
+gdal_translate -ot Byte -co COMPRESS=LZW -projwin 907836.035 2349619.201 4083036.035 319429.201  mexico.vrt mexico.tif
 ```
+
+## Mangroves
+
+The file *mx_man15gw.shp* was downloaded from CONABIO portal. A process similar to the one with the INEGI series was performed on the file with the python script named *transform_mangroves.py*. The resulting shape with the madmex column can be found at:
+
+```
+/LUSTRE/MADMEX/tasks/2018_tasks/mangroves/mangroves.shp
+```
+
+This command was used to rasterize it:
+
+```
+gdal_rasterize -ot Byte -co COMPRESS=LZW -a madmex -tr 30.0 30.0 -te 907836.035 319429.201 4083036.035 2349619.201 global_surface_water.shp global_surface_water.tif
+```
+
+*This file was not rasterised correctly, the file shows only zeros. I suspect that the problem is the units in the original shape as they are in lat/lon.*
+
+## Global Surface Water
+
+We already downloaded and preprocess the tiles for the global surface water product. The pixels with >80 ocurrence of water where filtered and a shape file was created. Those polygons are available in the *antares* database. Dumping those objects into a shape file resulted into the file:
+
+```
+/LUSTRE/MADMEX/tasks/2018_tasks/global_surface_water/global_surface_water.shp
+```
+
+Later with this command we transformed that shape file into a raster:
+
+```
+gdal_rasterize -ot Byte -co COMPRESS=LZW -a madmex -tr 30.0 30.0 -te 907836.035 319429.201 4083036.035 2349619.201 global_surface_water.shp global_surface_water.tif
+```
+
+*Same case as with mangroves, this file was not rasterised correctly, the file shows only zeros. I suspect that the problem is the units in the original shape as they are in lat/lon.*
+

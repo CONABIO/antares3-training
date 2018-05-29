@@ -75,13 +75,18 @@ The file *mx_man15gw.shp* was downloaded from CONABIO portal. A process similar 
 /LUSTRE/MADMEX/tasks/2018_tasks/mangroves/mangroves.shp
 ```
 
-This command was used to rasterize it:
+However, the resulting file is not projected so we need to project it into Lambert Comformal Conic (This Proj4 string was taken from [http://spatialreference.org/ref/sr-org/6700/](http://spatialreference.org/ref/sr-org/6700/)):
 
 ```
-gdal_rasterize -ot Byte -co COMPRESS=LZW -a madmex -tr 30.0 30.0 -te 907836.035 319429.201 4083036.035 2349619.201 global_surface_water.shp global_surface_water.tif
+ogr2ogr -f "ESRI Shapefile" mangroves_inegi.shp mangroves.shp -t_srs "+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs"
 ```
 
-*This file was not rasterised correctly, the file shows only zeros. I suspect that the problem is the units in the original shape as they are in lat/lon.*
+Then we can use this command to rasterize it:
+
+```
+gdal_rasterize -ot Byte -co COMPRESS=LZW -a madmex -tr 30.0 30.0 -te 907836.035 319429.201 4083036.035 2349619.201 mangroves_inegi.shp final_mangroves.tif
+```
+
 
 ## Global Surface Water
 
@@ -91,11 +96,15 @@ We already downloaded and preprocess the tiles for the global surface water prod
 /LUSTRE/MADMEX/tasks/2018_tasks/global_surface_water/global_surface_water.shp
 ```
 
+We need to apply the same process as with the mangroves file:
+
+```
+ogr2ogr -f "ESRI Shapefile" global_surface_water_inegi.shp global_surface_water.shp -t_srs "+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs"
+```
+
+
 Later with this command we transformed that shape file into a raster:
 
 ```
-gdal_rasterize -ot Byte -co COMPRESS=LZW -a madmex -tr 30.0 30.0 -te 907836.035 319429.201 4083036.035 2349619.201 global_surface_water.shp global_surface_water.tif
+gdal_rasterize -ot Byte -co COMPRESS=LZW -a madmex -tr 30.0 30.0 -te 907836.035 319429.201 4083036.035 2349619.201 global_surface_water_inegi.shp final_global_surface_water.tif
 ```
-
-*Same case as with mangroves, this file was not rasterised correctly, the file shows only zeros. I suspect that the problem is the units in the original shape as they are in lat/lon.*
-

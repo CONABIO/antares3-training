@@ -11,6 +11,7 @@ src_5 = rasterio.open(file_6)
 src_6 = rasterio.open(file_bits)
 water = rasterio.open('final_global_surface_water.tif')
 mangroves = rasterio.open('final_mangroves.tif')
+urban = rasterio.open('mexico_warped_cut.tif')
 
 
 profile = src_1.profile
@@ -30,6 +31,7 @@ for ji, window in src_1.block_windows(1):
     block_6 = src_6.read(window=window)
     block_water = water.read(window=window)
     block_mangroves = mangroves.read(window=window)
+    block_urban = urban.read(window=window)
     stack = numpy.vstack((block_1,
                           block_2,
                           block_3,
@@ -41,11 +43,11 @@ for ji, window in src_1.block_windows(1):
 
     mask_water = block_water == 32 # 32 is the class for water
     mask_mangroves = block_mangroves == 9 # 32 is the class for mangrove
-
-    print(mask_water.shape)
+    mask_urban = block_urban == 255
 
     to_write = numpy.full(block_1.shape, 0).astype(rasterio.uint8)
     to_write[:,mask] = block_1[:,mask]
     to_write[mask_mangroves] = 9
     to_write[mask_water] = 32
+    to_write[mask_urban] = 30
     output.write(to_write, window=window)

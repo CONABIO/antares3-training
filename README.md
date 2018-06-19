@@ -92,7 +92,17 @@ Later with this command we transformed that shape file into a raster:
 gdal_rasterize -ot Byte -co COMPRESS=LZW -a madmex -tr 30.0 30.0 -te 907836.035 319429.201 4083036.035 2349619.201 global_surface_water_inegi.shp final_global_surface_water.tif
 ```
 
-## INEGI + BITS + Mangroves + Global Surface Water
+## Global Urban Footprint
+
+We requested the global urban footprint product for Mexico from the Earth Observation Center. We received a raster file which was reprojected to match our other data:
+
+```
+gdalwarp -ot Byte -co COMPRESS=LZW -t_srs "+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +datum=WGS84 +units=m +no_defs" -tr 30.0 30.0 -te 907836.035 319429.201 4083036.035 2349619.201 mexico.tif mexico_warped.tif
+```
+
+
+
+## INEGI + BITS + Mangroves + Global Surface Water + Global Urban Footprint
 
 Finally we want to summarize the information of all series (2-6) in a single raster. To this end, we use rasterio and numpy to perform a raster algebra operation on the rasters, we will filter all the pixels whose class didn't change. Given that the rasters are quite big to fit in memory at the same time, we process them by block and write the output in the same way. Rasters with mangrove and water information will be overwritten on the final raster. In a folder that includes all the products that we just generated we execute:
 
